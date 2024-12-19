@@ -17,10 +17,5 @@ export const getNeighbours = ({ x, y }: Coord) => {
 };
 
 export const isInBounds = (grid: any[][], { x, y }: Coord) => {
-  if (!(y in grid)) {
-    return false;
-  }
-
-  const row = grid[y];
-  return x in row;
+  return y in grid && x in grid[y];
 };
