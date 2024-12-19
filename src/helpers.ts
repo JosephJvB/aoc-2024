@@ -4,6 +4,14 @@ export type Coord = {
 };
 
 export const getNeighbours = ({ x, y }: Coord) => {
+  /**
+   * given coord "0"
+   * return list of "X" coords
+   *
+   * XXX
+   * X0X
+   * XXX
+   */
   return [
     { x: x - 1, y: y - 1 }, // top left
     { x, y: y - 1 }, // top middle
