@@ -18,7 +18,7 @@ describe('helpers', () => {
     const grid: number[][] = [];
     for (let i = 0; i < 5; i++) {
       const row = [];
-      for (let j = 0; j < 5; j++) {
+      for (let j = 0; j < 6; j++) {
         row.push(0);
       }
       grid.push(row);
@@ -49,7 +49,7 @@ describe('helpers', () => {
     });
 
     test('x too high', () => {
-      const coord = { x: 5, y: 0 };
+      const coord = { x: 6, y: 0 };
 
       const result = isInBounds(grid, coord);
 
