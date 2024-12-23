@@ -209,7 +209,7 @@ describe('day 4', () => {
         expect(xmases).toHaveLength(1);
       });
 
-      test('does v1 solve test data?', () => {
+      test('does v2 solve test data?', () => {
         const grid = toGrid(testData);
 
         const starts: Coord[] = [];
@@ -234,6 +234,33 @@ describe('day 4', () => {
 
         xmasesToFileV2(tot);
         expect(tot).toHaveLength(18);
+      });
+
+      test('solves part 1', () => {
+        const grid = toGrid(realData);
+
+        const starts: Coord[] = [];
+        for (let r = 0; r < grid.length; r++) {
+          for (let c = 0; c < grid.length; c++) {
+            const coord = { x: c, y: r };
+            const cell = grid[r][c];
+            if (cell === 'X') {
+              starts.push(coord);
+            }
+          }
+        }
+
+        let tot = 0;
+        starts.forEach((start) => {
+          findXmasV2(grid, start).forEach((solution) => {
+            if (solution.coords.length === 'XMAS'.length) {
+              tot++;
+            }
+          });
+        });
+
+        expect(tot).toBeGreaterThan(18);
+        console.log({ part1: tot });
       });
     });
   });
