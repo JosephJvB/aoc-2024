@@ -2,21 +2,21 @@ import { readFileSync, writeFileSync } from 'fs';
 import { Coord, getNeighbours, isInBounds } from '../helpers';
 
 describe('day 4', () => {
-  const smallTestFilePath = __dirname + '/small-test-data.txt';
-  const testFilePath = __dirname + '/test-data.txt';
   const realFilePath = __dirname + '/real-data.txt';
   const parseFile = (filePath: string) =>
     readFileSync(filePath, 'utf-8')
       .trim()
       .split('\n')
       .map((line) => line.trim());
-  const realData = parseFile(realFilePath);
-  const testData = parseFile(testFilePath);
-  const smallTestData = parseFile(smallTestFilePath);
 
   const toGrid = (file: string[]) => file.map((line) => line.split(''));
 
   describe('part 1', () => {
+    const smallTestFilePath = __dirname + '/small-test-data.txt';
+    const testFilePath = __dirname + '/test-data.txt';
+    const realData = parseFile(realFilePath);
+    const testData = parseFile(testFilePath);
+    const smallTestData = parseFile(smallTestFilePath);
     test('can parse file & grid', () => {
       expect(smallTestData).toHaveLength(5);
 
@@ -260,8 +260,108 @@ describe('day 4', () => {
         });
 
         expect(tot).toBeGreaterThan(18);
-        console.log({ part1: tot });
+        console.log({ day4part1: tot });
       });
+    });
+  });
+
+  describe('part 2', () => {
+    const testFilePath = __dirname + '/part2-test-data.txt';
+    const testData = parseFile(testFilePath);
+
+    const getPoints = (center: Coord) => {
+      const topLeft = {
+        x: center.x - 1,
+        y: center.y - 1,
+      };
+      const topRight = {
+        x: center.x + 1,
+        y: center.y - 1,
+      };
+      const bottomRight = {
+        x: center.x + 1,
+        y: center.y + 1,
+      };
+      const bottomLeft = {
+        x: center.x - 1,
+        y: center.y + 1,
+      };
+
+      return { topLeft, topRight, bottomRight, bottomLeft };
+    };
+
+    const isXmas = (grid: string[][], center: Coord) => {
+      const points = getPoints(center);
+      const first = [points.topLeft, points.bottomRight].map(
+        (c) => grid[c.y]?.[c.x]
+      );
+      const second = [points.bottomLeft, points.topRight].map(
+        (c) => grid[c.y]?.[c.x]
+      );
+
+      return [first, second].every((cross) => cross.sort().join(',') === 'M,S');
+    };
+
+    test('isXmas works', () => {
+      const grid = toGrid(testData);
+
+      const result = isXmas(grid, {
+        x: 2,
+        y: 1,
+      });
+
+      expect(result).toBe(true);
+    });
+
+    test('can solve test data', () => {
+      const grid = toGrid(testData);
+
+      const centers: Coord[] = [];
+      for (let r = 1; r < grid.length - 1; r++) {
+        for (let c = 1; c < grid.length - 1; c++) {
+          const cell = grid[r][c];
+          if (cell === 'A') {
+            const coord = { x: c, y: r };
+            centers.push(coord);
+          }
+        }
+      }
+
+      let xmasses = 0;
+      centers.forEach((c) => {
+        if (isXmas(grid, c)) {
+          xmasses++;
+        }
+      });
+
+      expect(xmasses).toBe(9);
+    });
+
+    test('can solve real data', () => {
+      const realData = parseFile(realFilePath);
+      const grid = toGrid(realData);
+
+      const centers: Coord[] = [];
+      for (let r = 1; r < grid.length - 1; r++) {
+        for (let c = 1; c < grid.length - 1; c++) {
+          const cell = grid[r][c];
+          if (cell === 'A') {
+            const coord = { x: c, y: r };
+            centers.push(coord);
+          }
+        }
+      }
+
+      let xmasses = 0;
+      centers.forEach((c) => {
+        if (isXmas(grid, c)) {
+          xmasses++;
+        }
+      });
+
+      expect(xmasses).toBeGreaterThan(9);
+
+      console.log({ day4part2: xmasses });
     });
   });
 });
