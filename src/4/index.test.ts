@@ -364,4 +364,89 @@ describe('day 4', () => {
       console.log({ day4part2: xmasses });
     });
   });
+
+  describe('part 1 redux', () => {
+    const smallTestFilePath = __dirname + '/small-test-data.txt';
+    const testFilePath = __dirname + '/test-data.txt';
+    const realData = parseFile(realFilePath);
+    const testData = parseFile(testFilePath);
+    const smallTestData = parseFile(smallTestFilePath);
+
+    const findXmases = (grid: string[][], start: Coord) => {
+      const directions: Coord[] = [
+        { x: -1, y: -1 }, // top left
+        { x: 0, y: -1 }, // top middle
+        { x: 1, y: -1 }, // top right
+        { x: 1, y: 0 }, // middle right
+        { x: 1, y: 1 }, // bottom right
+        { x: 0, y: 1 }, // bottom middle
+        { x: -1, y: 1 }, // bottom left
+        { x: -1, y: 0 }, // middle left
+      ];
+
+      return directions.filter((direction) => {
+        const xmas = Array(4)
+          .fill(0)
+          .map((_, i) => {
+            const x = start.x + i * direction.x;
+            const y = start.y + i * direction.y;
+            const letter = grid[y]?.[x];
+            return letter;
+          })
+          .join('');
+
+        return xmas === 'XMAS';
+      });
+    };
+
+    test('can solve test data', () => {
+      const grid = toGrid(testData);
+
+      const starts: Coord[] = [];
+      for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid.length; x++) {
+          const letter = grid[y][x];
+          if (letter === 'X') {
+            const coord = { x, y };
+            starts.push(coord);
+          }
+        }
+      }
+
+      let tot = 0;
+      starts.forEach((start) => {
+        const found = findXmases(grid, start);
+        tot += found.length;
+      });
+
+      expect(tot).toBe(18);
+    });
+
+    test('can solve real data', () => {
+      const grid = toGrid(realData);
+
+      const starts: Coord[] = [];
+      for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid.length; x++) {
+          const letter = grid[y][x];
+          if (letter === 'X') {
+            const coord = { x, y };
+            starts.push(coord);
+          }
+        }
+      }
+
+      let tot = 0;
+      starts.forEach((start) => {
+        const found = findXmases(grid, start);
+        tot += found.length;
+      });
+
+      expect(tot).toBeGreaterThan(18);
+
+      console.log({
+        day4part1reduxReal: tot,
+      });
+    });
+  });
 });
