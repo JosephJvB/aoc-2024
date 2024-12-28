@@ -25,8 +25,8 @@ describe('day 5', () => {
     };
   };
 
-  // const realData = parseFile(realFilePath);
   const testData = parseFile(testFilePath);
+  const realData = parseFile(realFilePath);
 
   type RuleSet = {
     before: Record<number, Set<number>>;
@@ -54,6 +54,7 @@ describe('day 5', () => {
   };
 
   const testRuleSet = createRuleSet(testData.rules);
+  const realRuleSet = createRuleSet(realData.rules);
 
   describe('part 1', () => {
     test('it can parse test data', () => {
@@ -140,6 +141,23 @@ describe('day 5', () => {
       });
 
       expect(tot).toBe(143);
+    });
+
+    test('it can solve part 1 real data', () => {
+      let tot = 0;
+
+      realData.updates.forEach((update) => {
+        if (!isValidUpdate(realRuleSet, update)) {
+          return;
+        }
+
+        const middleIdx = (update.length - 1) / 2;
+        tot += update[middleIdx];
+      });
+
+      expect(tot).toBeGreaterThan(143);
+
+      // console.log({ part1: tot });
     });
   });
 });
