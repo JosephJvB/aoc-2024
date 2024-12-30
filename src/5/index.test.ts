@@ -56,6 +56,33 @@ describe('day 5', () => {
   const testRuleSet = createRuleSet(testData.rules);
   const realRuleSet = createRuleSet(realData.rules);
 
+  const isValidUpdate = (ruleSet: RuleSet, update: number[]) => {
+    const checked: number[] = [];
+    const toCheck = update.slice(0);
+
+    while (toCheck.length > 0) {
+      const u = toCheck.shift()!;
+
+      const before = ruleSet.before[u];
+      const beforeInvalid = before && checked.find((c) => before.has(c));
+      if (beforeInvalid) {
+        // console.log('beforeInvalid', { u });
+        return false;
+      }
+
+      const after = ruleSet.after[u];
+      const afterInvalid = after && toCheck.find((c) => after.has(c));
+      if (afterInvalid) {
+        // console.log('afterInvalid', { u });
+        return false;
+      }
+
+      checked.push(u);
+    }
+
+    return true;
+  };
+
   describe('part 1', () => {
     test('it can parse test data', () => {
       expect(testData.rules).toHaveLength(21);
@@ -77,33 +104,6 @@ describe('day 5', () => {
       expect(testData.updates[4]).toHaveLength(3);
       expect(testData.updates[5]).toHaveLength(5);
     });
-
-    const isValidUpdate = (ruleSet: RuleSet, update: number[]) => {
-      const checked: number[] = [];
-      const toCheck = update.slice(0);
-
-      while (toCheck.length > 0) {
-        const u = toCheck.shift()!;
-
-        const before = ruleSet.before[u];
-        const beforeInvalid = before && checked.find((c) => before.has(c));
-        if (beforeInvalid) {
-          // console.log('beforeInvalid', { u });
-          return false;
-        }
-
-        const after = ruleSet.after[u];
-        const afterInvalid = after && toCheck.find((c) => after.has(c));
-        if (afterInvalid) {
-          // console.log('afterInvalid', { u });
-          return false;
-        }
-
-        checked.push(u);
-      }
-
-      return true;
-    };
 
     test('solves update 1', () => {
       const input = testData.updates[0];
@@ -158,6 +158,121 @@ describe('day 5', () => {
       expect(tot).toBeGreaterThan(143);
 
       // console.log({ part1: tot });
+    });
+  });
+
+  describe('part 2', () => {
+    /**
+     * if is invalid
+     * find invalid index
+     * try to rehome the invalid number from start
+     */
+    const findInvalidIndex = (ruleSet: RuleSet, update: number[]) => {
+      const checked: number[] = [];
+      const toCheck = update.slice(0);
+
+      let idx = 0;
+      while (toCheck.length > 0) {
+        const u = toCheck.shift()!;
+
+        const before = ruleSet.before[u];
+        const beforeInvalid = before && checked.find((c) => before.has(c));
+        if (beforeInvalid) {
+          // console.log('beforeInvalid', { u });
+          return idx;
+        }
+
+        const after = ruleSet.after[u];
+        const afterInvalid = after && toCheck.find((c) => after.has(c));
+        if (afterInvalid) {
+          // console.log('afterInvalid', { u });
+          return idx;
+        }
+
+        checked.push(u);
+        idx++;
+      }
+
+      return -1;
+    };
+
+    test('it can find invalid index for 75,97,47,61,53', () => {
+      const input = [75, 97, 47, 61, 53];
+
+      const invalidIndex = findInvalidIndex(testRuleSet, input);
+
+      expect(invalidIndex).toBe(0);
+    });
+
+    test('it can find invalid index for 97,13,75,29,47', () => {
+      const input = [97, 13, 75, 29, 47];
+
+      const invalidIndex = findInvalidIndex(testRuleSet, input);
+
+      expect(invalidIndex).toBe(1);
+    });
+
+    const rehomeInvalidIndex = (
+      ruleSet: RuleSet,
+      update: number[],
+      invalidIndex: number
+    ) => {
+      const invalidNumber = update[invalidIndex];
+      const withoutInvalid = update.slice(0);
+      withoutInvalid.splice(invalidIndex, 1);
+
+      for (let i = 0; i < update.length; i++) {
+        if (i === invalidIndex) {
+          continue;
+        }
+
+        const clone = withoutInvalid.slice(0);
+        (clone.splice as any)(i, 0, invalidNumber);
+        if (findInvalidIndex(ruleSet, clone) === -1) {
+          return clone;
+        }
+      }
+
+      return null;
+    };
+
+    test('can rehome index in 75,97,47,61,53', () => {
+      const input = [75, 97, 47, 61, 53];
+
+      const result = rehomeInvalidIndex(testRuleSet, input, 0);
+
+      expect(result).toEqual([97, 75, 47, 61, 53]);
+    });
+
+    /**
+     * fn only handles only one invalid index
+     */
+    test.skip('can rehome index in 97,13,75,29,47', () => {
+      const input = [97, 13, 75, 29, 47];
+
+      const result = rehomeInvalidIndex(testRuleSet, input, 1);
+
+      expect(result).toEqual([97, 75, 47, 29, 13]);
+    });
+
+    test.skip('it can solve test data', () => {
+      let tot = 0;
+
+      testData.updates.forEach((update) => {
+        const invalidIndex = findInvalidIndex(testRuleSet, update);
+        if (invalidIndex === -1) {
+          return;
+        }
+
+        const fixed = rehomeInvalidIndex(testRuleSet, update, invalidIndex);
+        console.log(update, invalidIndex, fixed);
+        expect(fixed).not.toBe(null);
+
+        const middleIdx = fixed!.length - 1;
+        tot += fixed![middleIdx];
+      });
+
+      expect(tot).toBe(123);
     });
   });
 });
