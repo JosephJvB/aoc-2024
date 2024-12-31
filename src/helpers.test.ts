@@ -65,4 +65,69 @@ describe('helpers', () => {
       });
     });
   });
+
+  describe('all combos', () => {
+    // https://stackoverflow.com/questions/71878018/javascript-all-possible-combinations-from-single-array-every-order
+    const getAllCombos = <T>(list: T[]) => {
+      let combos: T[][] = [[]];
+
+      /**
+       * every number
+       */
+      for (const num of list) {
+        const temp = [];
+
+        /**
+         * every temp list
+         */
+        for (const combo of combos) {
+          /**
+           * every number again
+           */
+          for (let i = 0; i <= combo.length; i++) {
+            const newArr = combo.slice(0);
+            newArr.splice(i, 0, num);
+            temp.push(newArr);
+          }
+        }
+
+        combos = temp;
+      }
+
+      return combos;
+    };
+
+    test('can solve 1, 2, 3', () => {
+      const x = [1, 2, 3];
+      /**
+       * 1, 2, 3
+       * 1, 3, 2
+       * 2, 1, 3
+       * 2, 3, 1
+       * 3, 1, 2
+       * 3, 2, 1
+       */
+
+      const result = getAllCombos(x);
+
+      expect(result).toHaveLength(6);
+    });
+
+    test('can solve 1, 2, 3, 4', () => {
+      const x = [1, 2, 3, 4];
+      /**
+       * 1, 2, 3, 4
+       * 1, 2, 4, 3
+       * 1, 3, 2, 4
+       * 1, 3, 4, 2
+       * 1, 4, 2, 3
+       * 1, 4, 3, 2
+       * ...
+       */
+
+      const result = getAllCombos(x);
+
+      expect(result).toHaveLength(24);
+    });
+  });
 });

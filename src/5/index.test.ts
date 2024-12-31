@@ -228,12 +228,29 @@ describe('day 5', () => {
 
         const clone = withoutInvalid.slice(0);
         (clone.splice as any)(i, 0, invalidNumber);
-        if (findInvalidIndex(ruleSet, clone) === -1) {
+
+        const nextInvalidIndex = findInvalidIndex(ruleSet, clone);
+        /**
+         * fixed
+         */
+        if (nextInvalidIndex === -1) {
           return clone;
         }
+        /**
+         * OOPS
+         */
+        if (nextInvalidIndex === invalidIndex) {
+          throw new Error(
+            `couldnt place idx ${invalidIndex} in list ${update}`
+          );
+        }
+        /**
+         * something else failed down the line
+         */
+        if (nextInvalidIndex > invalidIndex) {
+          return rehomeInvalidIndex(ruleSet, clone, nextInvalidIndex);
+        }
       }
-
-      return null;
     };
 
     test('can rehome index in 75,97,47,61,53', () => {
@@ -246,33 +263,22 @@ describe('day 5', () => {
 
     /**
      * fn only handles only one invalid index
+     *
+     * was gonna try brute force it
+     *
+     * but maybe better idea is to read up some reddit solutions...
+     *
+     * had an issue were rehoming first index
+     * then meant I couldn't find a solution for the FOLLOWING one.
+     * I think.
+     * Having a hard time following all the loops
      */
-    test.skip('can rehome index in 97,13,75,29,47', () => {
+    test.only('can rehome index in 97,13,75,29,47', () => {
       const input = [97, 13, 75, 29, 47];
 
       const result = rehomeInvalidIndex(testRuleSet, input, 1);
 
       expect(result).toEqual([97, 75, 47, 29, 13]);
-    });
-
-    test.skip('it can solve test data', () => {
-      let tot = 0;
-
-      testData.updates.forEach((update) => {
-        const invalidIndex = findInvalidIndex(testRuleSet, update);
-        if (invalidIndex === -1) {
-          return;
-        }
-
-        const fixed = rehomeInvalidIndex(testRuleSet, update, invalidIndex);
-        console.log(update, invalidIndex, fixed);
-        expect(fixed).not.toBe(null);
-
-        const middleIdx = fixed!.length - 1;
-        tot += fixed![middleIdx];
-      });
-
-      expect(tot).toBe(123);
     });
   });
 });
