@@ -66,6 +66,9 @@ describe('helpers', () => {
     });
   });
 
+  /**
+   * still find it hard to understand
+   */
   describe('all combos', () => {
     // https://stackoverflow.com/questions/71878018/javascript-all-possible-combinations-from-single-array-every-order
     const getAllCombos = <T>(list: T[]) => {

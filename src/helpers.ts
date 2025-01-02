@@ -2,6 +2,7 @@ export type Coord = {
   x: number;
   y: number;
 };
+export type Direction = 'N' | 'E' | 'S' | 'W';
 
 export const getNeighbours = ({ x, y }: Coord) => {
   /**
