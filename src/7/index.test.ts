@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 
 describe('day 7', () => {
   const testFilePath = __dirname + '/test-data.txt';
@@ -118,6 +118,12 @@ describe('day 7', () => {
       const result = makeCombos(input);
 
       expect(result).toHaveLength(4);
+      /**
+       * 81 + 40 + 27
+       * 81 x 40 + 27
+       * 81 + 40 x 27
+       * 81 x 40 x 27
+       */
     });
 
     test('can solve row 1', () => {
@@ -158,8 +164,34 @@ describe('day 7', () => {
       expect(result).toBe(3749);
     });
 
+    test('it can solve 39606: 20 6 55 1 6', () => {
+      const ans = 39606;
+      const vals = [20, 6, 55, 1, 6];
+
+      const combos = makeCombos(vals);
+
+      const combosStr: string[] = [];
+      combos.forEach((c) => {
+        const x: string[] = [vals[0].toString()];
+        c.forEach((op, i) => {
+          x.push(op);
+          x.push(vals[i + 1]!.toString());
+        });
+        x.push('=');
+        x.push(evaluate(vals, c).toString());
+        combosStr.push(x.join(' '));
+      });
+      writeFileSync(__dirname + '/combos.txt', combosStr.join('\n'));
+
+      const valid = combos.find((c) => evaluate(vals, c) === ans);
+
+      expect(valid).toBeTruthy();
+    });
+
     test('can solve real data', () => {
       let result = 0;
+
+      // const successLines: string[] = [];
 
       realData.forEach(({ ans, vals }) => {
         const combos = makeCombos(vals);
@@ -167,6 +199,7 @@ describe('day 7', () => {
         const valid = combos.find((c) => evaluate(vals, c) === ans);
 
         if (valid) {
+          // successLines.push(`${ans}: ${vals.join(' ')}`);
           result += ans;
         }
       });
@@ -175,6 +208,7 @@ describe('day 7', () => {
       /**
        * too low, crazy! That number is so big :o
        */
+      // writeFileSync(__dirname + '/jvb.txt', successLines.join('\n'));
       expect(result).toBeGreaterThan(40696069044469);
       console.log({
         day7part1: result,
