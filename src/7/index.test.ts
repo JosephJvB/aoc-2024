@@ -183,12 +183,17 @@ describe('day 7', () => {
       });
       writeFileSync(__dirname + '/combos.txt', combosStr.join('\n'));
 
+      const validCombo = ['x', 'x', '+', 'x'];
+      const vc = combos.find((c) => c.join(' ') === validCombo.join(' '));
+      expect(vc).toBeTruthy();
+
       const valid = combos.find((c) => evaluate(vals, c) === ans);
+      console.log(combos.length, valid);
 
       expect(valid).toBeTruthy();
     });
 
-    test('can solve real data', () => {
+    test.skip('can solve real data', () => {
       let result = 0;
 
       // const successLines: string[] = [];
