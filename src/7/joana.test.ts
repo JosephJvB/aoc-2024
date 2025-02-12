@@ -5,8 +5,8 @@
 import { readFileSync, writeFileSync } from 'fs';
 
 describe('joana day 7 part 1', () => {
-  test('joana solves 381705: 8 6 7 4 5 78 9 7 8 500 4 9', () => {
-    const input = '381705: 8 6 7 4 5 78 9 7 8 500 4 9';
+  test('joana solves 39606: 20 6 55 1 6', () => {
+    const input = '39606: 20 6 55 1 6';
 
     const ops: string[] = [];
 
@@ -51,6 +51,7 @@ describe('joana day 7 part 1', () => {
       });
       writeFileSync(__dirname + '/joanaops.txt', r.join(' '));
       writeFileSync(__dirname + '/joanaops2.txt', ops.join(' '));
+      expect(answer).toBe(39606);
     }
 
     function checkMath(
